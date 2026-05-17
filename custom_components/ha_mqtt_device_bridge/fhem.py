@@ -29,6 +29,8 @@ class FhemDeviceConfig:
     cid: str
     availability_topic: str
     readings_topic: str
+    meta_topic: str
+    fhem_raw_topic: str
     set_commands: tuple[FhemSetCommand, ...]
     web_commands: tuple[str, ...]
     set_state_commands: tuple[str, ...]
@@ -65,4 +67,3 @@ class FhemDeviceConfig:
 def render_fhem_raw_configs(configs: Iterable[FhemDeviceConfig]) -> str:
     """Render multiple FHEM raw configs separated by blank lines."""
     return "\n\n".join(config.render_raw() for config in configs)
-

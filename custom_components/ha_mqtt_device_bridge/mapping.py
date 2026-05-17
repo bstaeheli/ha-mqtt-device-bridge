@@ -6,6 +6,7 @@ from collections import Counter
 from collections.abc import Mapping
 from typing import Any
 
+from .command import build_command_definitions
 from .const import DEFAULT_TOPIC_PREFIX
 from .fhem import FhemDeviceConfig, FhemSetCommand
 from .slug import ascii_slug, fhem_device_name
@@ -39,6 +40,41 @@ def build_readings_payload(template_export: Mapping[str, Any]) -> dict[str, Any]
                 ]
 
     return payload
+
+
+def build_meta_payload(
+    template_export: Mapping[str, Any],
+    *,
+    topic_prefix: str = DEFAULT_TOPIC_PREFIX,
+) -> dict[str, Any]:
+    """Build retained metadata for a published bridge device."""
+    fhem_config = build_fhem_device_config(
+        template_export,
+        topic_prefix=topic_prefix,
+    )
+    commands = build_command_definitions(
+        template_export,
+        topic_prefix=topic_prefix,
+    )
+
+    return {
+        "device": template_export["device"],
+        "device_id": template_export["device_id"],
+        "fhem_device_name": fhem_config.device_name,
+        "mqtt": {
+            "availability_topic": fhem_config.availability_topic,
+            "readings_topic": fhem_config.readings_topic,
+            "command_topics": sorted(commands),
+        },
+        "entities": [
+            {
+                "entity_id": entity["entity_id"],
+                "domain": entity["domain"],
+                "friendly_name": entity.get("friendly_name"),
+            }
+            for entity in template_export["entities"]
+        ],
+    }
 
 
 def build_fhem_device_config(
@@ -86,6 +122,8 @@ def build_fhem_device_config(
         cid=f"{topic_prefix}_{device_slug}",
         availability_topic=f"{base_topic}/availability",
         readings_topic=f"{base_topic}/readings",
+        meta_topic=f"{base_topic}/meta",
+        fhem_raw_topic=f"{base_topic}/fhem/raw",
         set_commands=tuple(unique_commands),
         web_commands=tuple(web_commands),
         set_state_commands=tuple(set_state_commands),
@@ -116,7 +154,17 @@ def _commands_for_entity(
         return (
             FhemSetCommand(
                 name=name,
-                widget="on,off",
+                widget="on,off,toggle",
+                topic=f"{command_topic}/set",
+                payload="$EVTPART1",
+            ),
+        )
+
+    if domain == "light":
+        return (
+            FhemSetCommand(
+                name=name,
+                widget="on,off,toggle",
                 topic=f"{command_topic}/set",
                 payload="$EVTPART1",
             ),
@@ -137,6 +185,36 @@ def _commands_for_entity(
                 ),
                 topic=f"{command_topic}/set",
                 payload="$EVTPART1",
+            ),
+        )
+
+    if domain == "lock":
+        return (
+            FhemSetCommand(
+                name=name,
+                widget="lock,unlock",
+                topic=f"{command_topic}/set",
+                payload="$EVTPART1",
+            ),
+        )
+
+    if domain == "siren":
+        return (
+            FhemSetCommand(
+                name=name,
+                widget="on,off",
+                topic=f"{command_topic}/set",
+                payload="$EVTPART1",
+            ),
+        )
+
+    if domain == "scene":
+        return (
+            FhemSetCommand(
+                name=name,
+                widget="noArg",
+                topic=f"{command_topic}/turn_on",
+                payload="1",
             ),
         )
 

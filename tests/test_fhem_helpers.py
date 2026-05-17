@@ -41,6 +41,8 @@ class FhemRenderTest(unittest.TestCase):
             cid="ha2fhem_miele_washer",
             availability_topic="ha2fhem/miele_washer/availability",
             readings_topic="ha2fhem/miele_washer/readings",
+            meta_topic="ha2fhem/miele_washer/meta",
+            fhem_raw_topic="ha2fhem/miele_washer/fhem/raw",
             set_commands=(
                 FhemSetCommand(
                     name="power",
@@ -71,4 +73,3 @@ class FhemRenderTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

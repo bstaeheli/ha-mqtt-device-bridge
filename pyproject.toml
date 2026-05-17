@@ -1,0 +1,14 @@
+[project]
+name = "ha-mqtt-device-bridge"
+version = "0.0.0"
+description = "Home Assistant custom integration planning and implementation for bridging HA devices to FHEM MQTT2_DEVICE."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = []
+
+[tool.uv]
+package = false
+

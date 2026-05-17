@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "name": "Name",
+          "topic_prefix": "MQTT topic prefix",
+          "qos": "MQTT QoS",
+          "retain": "Retain MQTT state and metadata"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "topic_prefix": "MQTT topic prefix",
+          "qos": "MQTT QoS",
+          "retain": "Retain MQTT state and metadata",
+          "allowed_integrations": "Allowed integration domains"
+        }
+      }
+    }
+  },
+  "services": {
+    "republish": {
+      "name": "Republish bridge data",
+      "description": "Republish retained MQTT state, metadata, and generated FHEM config for loaded bridge entries.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Config entry ID",
+          "description": "Optional bridge config entry ID to republish. If omitted, all loaded bridge entries are republished."
+        }
+      }
+    }
+  }
+}
+

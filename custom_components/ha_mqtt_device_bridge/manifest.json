@@ -1,0 +1,14 @@
+{
+  "domain": "ha_mqtt_device_bridge",
+  "name": "Home Assistant MQTT Device Bridge",
+  "after_dependencies": ["mqtt"],
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["mqtt"],
+  "documentation": "https://github.com/boris/ha-mqtt-device-bridge",
+  "integration_type": "hub",
+  "iot_class": "local_push",
+  "requirements": [],
+  "version": "0.0.0"
+}
+

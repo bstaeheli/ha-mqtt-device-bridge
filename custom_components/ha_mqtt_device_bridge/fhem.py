@@ -27,6 +27,7 @@ class FhemDeviceConfig:
 
     device_name: str
     cid: str
+    base_topic: str
     availability_topic: str
     readings_topic: str
     meta_topic: str
@@ -39,17 +40,21 @@ class FhemDeviceConfig:
         """Render a FHEM raw config snippet."""
         lines = [
             f"defmod {self.device_name} MQTT2_DEVICE {self.cid}",
+            f"attr {self.device_name} devicetopic {self.base_topic}",
             (
                 f"attr {self.device_name} readingList "
-                f"{self.availability_topic}:.* LWT\\\n"
-                f"  {self.readings_topic}:.* {{ json2nameValue($EVENT) }}"
+                f"$DEVICETOPIC/availability:.* LWT\\\n"
+                f"  $DEVICETOPIC/readings:.* {{ json2nameValue($EVENT) }}"
             ),
         ]
 
         if self.set_commands:
             lines.append(
                 f"attr {self.device_name} setList "
-                + "\\\n  ".join(command.render() for command in self.set_commands)
+                + "\\\n  ".join(
+                    cmd.render().replace(f"{self.base_topic}/", "$DEVICETOPIC/")
+                    for cmd in self.set_commands
+                )
             )
 
         if self.set_state_commands:

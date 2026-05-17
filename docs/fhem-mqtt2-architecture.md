@@ -79,14 +79,17 @@ Example readings payload:
 ```json
 {
   "state": "on",
-  "power": "on",
-  "program": "cottons",
-  "remaining_time": 42,
-  "door": "closed",
-  "mobile_start": "on",
-  "_ts": "2026-05-17T19:43:00+02:00"
+  "fernsteuerung": "on",
+  "programm": "cottons",
+  "restzeit": 42,
+  "tuer": "closed",
+  "last_change": "2026-05-17T19:43:00+02:00"
 }
 ```
+
+Reading names are derived from entity object IDs with the common device prefix stripped.
+The entity whose object ID matches the common prefix is published as ``state``.
+The ``last_change`` field contains the ISO 8601 timestamp of the most recently changed entity.
 
 Example command topics:
 
@@ -108,11 +111,12 @@ Example generated raw config:
 
 ```text
 defmod HA_Miele_Washer MQTT2_DEVICE ha2fhem_miele_washer
-attr HA_Miele_Washer readingList ha2fhem/miele_washer/availability:.* LWT\
-  ha2fhem/miele_washer/readings:.* { json2nameValue($EVENT) }
-attr HA_Miele_Washer setList power:on,off ha2fhem/miele_washer/cmd/switch_power/set $EVTPART1\
-  start:noArg ha2fhem/miele_washer/cmd/button_start/press 1\
-  stop:noArg ha2fhem/miele_washer/cmd/button_stop/press 1
+attr HA_Miele_Washer devicetopic ha2fhem/miele_washer
+attr HA_Miele_Washer readingList $DEVICETOPIC/availability:.* LWT\
+  $DEVICETOPIC/readings:.* { json2nameValue($EVENT) }
+attr HA_Miele_Washer setList power:on,off $DEVICETOPIC/cmd/switch_power/set $EVTPART1\
+  start:noArg $DEVICETOPIC/cmd/button_start/press 1\
+  stop:noArg $DEVICETOPIC/cmd/button_stop/press 1
 attr HA_Miele_Washer setStateList power:on,off
 attr HA_Miele_Washer webCmd power:start:stop
 ```

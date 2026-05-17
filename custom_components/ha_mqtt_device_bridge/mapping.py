@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Mapping
+from os.path import commonprefix
 from typing import Any
 
 from .command import build_command_definitions
@@ -22,13 +23,44 @@ def object_id(entity_id: str) -> str:
     return entity_id.split(".", 1)[1] if "." in entity_id else entity_id
 
 
+def _entity_prefix(entities: list[Mapping[str, Any]]) -> str:
+    """Return the common slug prefix shared by all entity object IDs in a device.
+
+    Trailing underscores are stripped so the prefix is a clean word boundary.
+    """
+    slugs = [ascii_slug(object_id(e["entity_id"]), fallback="entity") for e in entities]
+    if not slugs:
+        return ""
+    prefix = commonprefix(slugs).rstrip("_")
+    return prefix
+
+
+def _short_name(slug: str, prefix: str) -> str:
+    """Strip a common device prefix from a reading or command name.
+
+    If the slug exactly matches the prefix the entity is the primary entity
+    and its reading is named ``state``.  If the slug starts with
+    ``prefix_`` the prefix is stripped.  Otherwise the slug is returned as-is.
+    """
+    if not prefix:
+        return slug
+    if slug == prefix:
+        return "state"
+    if slug.startswith(prefix + "_"):
+        return slug[len(prefix) + 1:]
+    return slug
+
+
 def build_readings_payload(template_export: Mapping[str, Any]) -> dict[str, Any]:
     """Build a compact FHEM readings payload from a template export."""
+    entities = template_export["entities"]
+    prefix = _entity_prefix(list(entities))
     payload: dict[str, Any] = {}
     timestamps: list[str] = []
 
-    for entity in template_export["entities"]:
-        reading = ascii_slug(object_id(entity["entity_id"]), fallback="entity")
+    for entity in entities:
+        raw_name = ascii_slug(object_id(entity["entity_id"]), fallback="entity")
+        reading = _short_name(raw_name, prefix)
         payload[reading] = entity.get("state")
 
         if ts := entity.get("last_changed"):
@@ -44,7 +76,7 @@ def build_readings_payload(template_export: Mapping[str, Any]) -> dict[str, Any]
                 ]
 
     if timestamps:
-        payload["_ts"] = max(timestamps)
+        payload["last_change"] = max(timestamps)
 
     return payload
 
@@ -95,13 +127,15 @@ def build_fhem_device_config(
     device_name = fhem_device_name(device["name"], device_id)
     device_slug = ascii_slug(device["name"], fallback="device")
     base_topic = f"{topic_prefix}/{device_slug}"
+    entities = template_export["entities"]
+    prefix = _entity_prefix(list(entities))
 
     commands: list[FhemSetCommand] = []
     web_commands: list[str] = []
     set_state_commands: list[str] = []
 
-    for entity in template_export["entities"]:
-        commands.extend(_commands_for_entity(base_topic, entity))
+    for entity in entities:
+        commands.extend(_commands_for_entity(base_topic, entity, prefix))
 
     seen_commands: Counter[str] = Counter()
     unique_commands: list[FhemSetCommand] = []
@@ -127,6 +161,7 @@ def build_fhem_device_config(
     return FhemDeviceConfig(
         device_name=device_name,
         cid=f"{topic_prefix}_{device_slug}",
+        base_topic=base_topic,
         availability_topic=f"{base_topic}/availability",
         readings_topic=f"{base_topic}/readings",
         meta_topic=f"{base_topic}/meta",
@@ -138,12 +173,13 @@ def build_fhem_device_config(
 
 
 def _commands_for_entity(
-    base_topic: str, entity: Mapping[str, Any]
+    base_topic: str, entity: Mapping[str, Any], prefix: str = ""
 ) -> tuple[FhemSetCommand, ...]:
     """Build FHEM set commands for one entity snapshot."""
     entity_id = entity["entity_id"]
     domain = entity["domain"]
-    name = ascii_slug(object_id(entity_id), fallback=domain)
+    raw_name = ascii_slug(object_id(entity_id), fallback=domain)
+    name = _short_name(raw_name, prefix)
     slug = entity_slug(entity_id)
     command_topic = f"{base_topic}/cmd/{slug}"
 

@@ -44,17 +44,17 @@ class MappingTest(unittest.TestCase):
 
         self.assertTrue(config.device_name.startswith("HA_Overkiz_Fixture_Device_"))
         self.assertEqual(config.readings_topic, "ha2fhem/overkiz_fixture_device/readings")
-        self.assertIn("overkiz_fixture_0", command_names)
-        self.assertIn("overkiz_fixture_1", command_names)
-        self.assertIn("overkiz_fixture_2_open", command_names)
-        self.assertIn("overkiz_fixture_2_position", command_names)
-        self.assertIn("overkiz_fixture_3", command_names)
+        self.assertIn("0", command_names)
+        self.assertIn("1", command_names)
+        self.assertIn("2_open", command_names)
+        self.assertIn("2_position", command_names)
+        self.assertIn("3", command_names)
         self.assertIn(
-            "ha2fhem/overkiz_fixture_device/cmd/cover_overkiz_fixture_2/open",
+            "$DEVICETOPIC/cmd/cover_overkiz_fixture_2/open",
             raw,
         )
         self.assertIn(
-            "overkiz_fixture_3:slider,0,1,100",
+            "3:slider,0,1,100",
             raw,
         )
 
@@ -67,7 +67,7 @@ class MappingTest(unittest.TestCase):
         self.assertTrue(config.device_name.startswith("HA_Miele_Fixture_Appliance_"))
         self.assertEqual(config.readings_topic, "ha2fhem/miele_fixture_appliance/readings")
         self.assertEqual(len(config.set_commands), 1)
-        self.assertEqual(config.set_commands[0].name, "miele_fixture_17")
+        self.assertEqual(config.set_commands[0].name, "17")
         self.assertEqual(config.set_commands[0].widget, "on,off,toggle")
 
     def test_additional_action_domains_render_expected_setters(self) -> None:
@@ -86,10 +86,10 @@ class MappingTest(unittest.TestCase):
         config = build_fhem_device_config(export, topic_prefix="ha2fhem")
         raw = config.render_raw()
 
-        self.assertIn("kitchen:on,off,toggle ha2fhem/kitchen_controls/cmd/light_kitchen/set $EVTPART1", raw)
-        self.assertIn("front_door:lock,unlock ha2fhem/kitchen_controls/cmd/lock_front_door/set $EVTPART1", raw)
-        self.assertIn("evening:noArg ha2fhem/kitchen_controls/cmd/scene_evening/turn_on 1", raw)
-        self.assertIn("alarm:on,off ha2fhem/kitchen_controls/cmd/siren_alarm/set $EVTPART1", raw)
+        self.assertIn("kitchen:on,off,toggle $DEVICETOPIC/cmd/light_kitchen/set $EVTPART1", raw)
+        self.assertIn("front_door:lock,unlock $DEVICETOPIC/cmd/lock_front_door/set $EVTPART1", raw)
+        self.assertIn("evening:noArg $DEVICETOPIC/cmd/scene_evening/turn_on 1", raw)
+        self.assertIn("alarm:on,off $DEVICETOPIC/cmd/siren_alarm/set $EVTPART1", raw)
 
     def test_readings_payload_contains_entity_state_and_cover_positions(self) -> None:
         """Readings payload keeps state data compact and FHEM-friendly."""
@@ -97,10 +97,10 @@ class MappingTest(unittest.TestCase):
 
         payload = build_readings_payload(export)
 
-        self.assertEqual(payload["overkiz_fixture_2"], "closed")
-        self.assertEqual(payload["overkiz_fixture_2_position"], 0)
-        self.assertEqual(payload["overkiz_fixture_2_tilt_position"], 0)
-        self.assertEqual(payload["overkiz_fixture_3"], "97")
+        self.assertEqual(payload["2"], "closed")
+        self.assertEqual(payload["2_position"], 0)
+        self.assertEqual(payload["2_tilt_position"], 0)
+        self.assertEqual(payload["3"], "97")
 
     def test_meta_payload_exposes_command_topics(self) -> None:
         """Meta payload lists generated MQTT topics and exported entities."""

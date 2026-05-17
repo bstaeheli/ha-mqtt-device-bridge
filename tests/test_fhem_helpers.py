@@ -39,6 +39,7 @@ class FhemRenderTest(unittest.TestCase):
         config = FhemDeviceConfig(
             device_name="HA_Miele_Washer_ab12cd",
             cid="ha2fhem_miele_washer",
+            base_topic="ha2fhem/miele_washer",
             availability_topic="ha2fhem/miele_washer/availability",
             readings_topic="ha2fhem/miele_washer/readings",
             meta_topic="ha2fhem/miele_washer/meta",
@@ -64,9 +65,10 @@ class FhemRenderTest(unittest.TestCase):
         raw = config.render_raw()
 
         self.assertIn("defmod HA_Miele_Washer_ab12cd MQTT2_DEVICE ha2fhem_miele_washer", raw)
-        self.assertIn("ha2fhem/miele_washer/readings:.* { json2nameValue($EVENT) }", raw)
-        self.assertIn("power:on,off ha2fhem/miele_washer/cmd/switch_power/set $EVTPART1", raw)
-        self.assertIn("start:noArg ha2fhem/miele_washer/cmd/button_start/press 1", raw)
+        self.assertIn("attr HA_Miele_Washer_ab12cd devicetopic ha2fhem/miele_washer", raw)
+        self.assertIn("$DEVICETOPIC/readings:.* { json2nameValue($EVENT) }", raw)
+        self.assertIn("power:on,off $DEVICETOPIC/cmd/switch_power/set $EVTPART1", raw)
+        self.assertIn("start:noArg $DEVICETOPIC/cmd/button_start/press 1", raw)
         self.assertIn("attr HA_Miele_Washer_ab12cd setStateList power:on,off", raw)
         self.assertIn("attr HA_Miele_Washer_ab12cd webCmd power:start", raw)
 

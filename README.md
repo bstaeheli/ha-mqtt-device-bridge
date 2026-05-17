@@ -12,7 +12,8 @@ The initial target is a bridge from Home Assistant's Overkiz and Miele integrati
 - Subscribes to MQTT command topics and translates them to HA service calls.
 - UI-based setup via config flow and options flow (no YAML required).
 - All state/metadata topics are retained; only changed readings are re-published on state changes.
-- Readings payload includes a `_ts` timestamp (ISO 8601) of the most recent entity state change.
+- Readings payload includes a `last_change` timestamp (ISO 8601) of the most recent entity state change.
+- Reading names have the common device prefix stripped; the primary entity is published as `state`.
 - `republish` service action for manual re-broadcast of all retained topics.
 - Diagnostics support with sensitive value redaction.
 

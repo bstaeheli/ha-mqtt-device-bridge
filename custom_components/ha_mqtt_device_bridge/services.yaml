@@ -1,0 +1,7 @@
+republish:
+  fields:
+    config_entry_id:
+      example: 01KR8V9CT7WSXNCFQ77A9FRX9T
+      selector:
+        text:
+

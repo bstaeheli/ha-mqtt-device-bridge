@@ -38,7 +38,7 @@ See [docs/fhem-mqtt2-architecture.md](docs/fhem-mqtt2-architecture.md) for the d
 Python tooling is managed with `uv`. The repository starts with standard-library tests for the redacted example fixtures:
 
 ```sh
-uv run python -m unittest discover -s tests
+UV_CACHE_DIR=.uv-cache uv run python -m unittest discover -s tests
 ```
 
 Home Assistant integration tests will be added with the implementation scaffold.

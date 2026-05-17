@@ -1,0 +1,192 @@
+"""Map Home Assistant device snapshots to FHEM MQTT2_DEVICE artifacts."""
+
+from __future__ import annotations
+
+from collections import Counter
+from collections.abc import Mapping
+from typing import Any
+
+from .const import DEFAULT_TOPIC_PREFIX
+from .fhem import FhemDeviceConfig, FhemSetCommand
+from .slug import ascii_slug, fhem_device_name
+
+
+def entity_slug(entity_id: str) -> str:
+    """Return the MQTT command slug for an entity ID."""
+    return ascii_slug(entity_id.replace(".", "_"), fallback="entity")
+
+
+def object_id(entity_id: str) -> str:
+    """Return the object ID part of an entity ID."""
+    return entity_id.split(".", 1)[1] if "." in entity_id else entity_id
+
+
+def build_readings_payload(template_export: Mapping[str, Any]) -> dict[str, Any]:
+    """Build a compact FHEM readings payload from a template export."""
+    payload: dict[str, Any] = {}
+
+    for entity in template_export["entities"]:
+        reading = ascii_slug(object_id(entity["entity_id"]), fallback="entity")
+        payload[reading] = entity.get("state")
+
+        attributes = entity.get("attributes", {})
+        if entity["domain"] == "cover":
+            if "current_position" in attributes:
+                payload[f"{reading}_position"] = attributes["current_position"]
+            if "current_tilt_position" in attributes:
+                payload[f"{reading}_tilt_position"] = attributes[
+                    "current_tilt_position"
+                ]
+
+    return payload
+
+
+def build_fhem_device_config(
+    template_export: Mapping[str, Any],
+    *,
+    topic_prefix: str = DEFAULT_TOPIC_PREFIX,
+) -> FhemDeviceConfig:
+    """Build a FHEM MQTT2_DEVICE config from a Home Assistant template export."""
+    device = template_export["device"]
+    device_id = template_export["device_id"]
+    device_name = fhem_device_name(device["name"], device_id)
+    device_slug = ascii_slug(device["name"], fallback="device")
+    base_topic = f"{topic_prefix}/{device_slug}"
+
+    commands: list[FhemSetCommand] = []
+    web_commands: list[str] = []
+    set_state_commands: list[str] = []
+
+    for entity in template_export["entities"]:
+        commands.extend(_commands_for_entity(base_topic, entity))
+
+    seen_commands: Counter[str] = Counter()
+    unique_commands: list[FhemSetCommand] = []
+    for command in commands:
+        seen_commands[command.name] += 1
+        if seen_commands[command.name] == 1:
+            unique_commands.append(command)
+        else:
+            unique_commands.append(
+                FhemSetCommand(
+                    name=f"{command.name}_{seen_commands[command.name]}",
+                    widget=command.widget,
+                    topic=command.topic,
+                    payload=command.payload,
+                )
+            )
+
+    for command in unique_commands:
+        web_commands.append(command.name)
+        if command.widget and ("on,off" in command.widget or "slider" in command.widget):
+            set_state_commands.append(f"{command.name}:{command.widget}")
+
+    return FhemDeviceConfig(
+        device_name=device_name,
+        cid=f"{topic_prefix}_{device_slug}",
+        availability_topic=f"{base_topic}/availability",
+        readings_topic=f"{base_topic}/readings",
+        set_commands=tuple(unique_commands),
+        web_commands=tuple(web_commands),
+        set_state_commands=tuple(set_state_commands),
+    )
+
+
+def _commands_for_entity(
+    base_topic: str, entity: Mapping[str, Any]
+) -> tuple[FhemSetCommand, ...]:
+    """Build FHEM set commands for one entity snapshot."""
+    entity_id = entity["entity_id"]
+    domain = entity["domain"]
+    name = ascii_slug(object_id(entity_id), fallback=domain)
+    slug = entity_slug(entity_id)
+    command_topic = f"{base_topic}/cmd/{slug}"
+
+    if domain == "button":
+        return (
+            FhemSetCommand(
+                name=name,
+                widget="noArg",
+                topic=f"{command_topic}/press",
+                payload="1",
+            ),
+        )
+
+    if domain == "switch":
+        return (
+            FhemSetCommand(
+                name=name,
+                widget="on,off",
+                topic=f"{command_topic}/set",
+                payload="$EVTPART1",
+            ),
+        )
+
+    if domain == "number":
+        attributes = entity.get("attributes", {})
+        minimum = attributes.get("min", 0)
+        maximum = attributes.get("max", 100)
+        step = attributes.get("step", 1)
+        return (
+            FhemSetCommand(
+                name=name,
+                widget=(
+                    f"slider,{_format_widget_number(minimum)},"
+                    f"{_format_widget_number(step)},"
+                    f"{_format_widget_number(maximum)}"
+                ),
+                topic=f"{command_topic}/set",
+                payload="$EVTPART1",
+            ),
+        )
+
+    if domain == "cover":
+        return (
+            FhemSetCommand(
+                name=f"{name}_open",
+                widget="noArg",
+                topic=f"{command_topic}/open",
+                payload="1",
+            ),
+            FhemSetCommand(
+                name=f"{name}_close",
+                widget="noArg",
+                topic=f"{command_topic}/close",
+                payload="1",
+            ),
+            FhemSetCommand(
+                name=f"{name}_stop",
+                widget="noArg",
+                topic=f"{command_topic}/stop",
+                payload="1",
+            ),
+            FhemSetCommand(
+                name=f"{name}_position",
+                widget="slider,0,1,100",
+                topic=f"{command_topic}/position",
+                payload="$EVTPART1",
+            ),
+        )
+
+    if domain == "select":
+        options = entity.get("attributes", {}).get("options", [])
+        if not options:
+            return ()
+        widget = ",".join(str(option) for option in options)
+        return (
+            FhemSetCommand(
+                name=name,
+                widget=widget,
+                topic=f"{command_topic}/select",
+                payload="$EVTPART1",
+            ),
+        )
+
+    return ()
+
+
+def _format_widget_number(value: Any) -> str:
+    """Render a FHEM widget number without unnecessary decimal places."""
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value)

@@ -49,7 +49,7 @@ All MQTT messages are published with `retain=True`.
 
 ```text
 <prefix>/<device_slug>/availability     → "online" / "offline"
-<prefix>/<device_slug>/readings         → JSON state snapshot with _ts
+<prefix>/<device_slug>/readings         → JSON state snapshot with last_change
 <prefix>/<device_slug>/meta             → JSON device + entity metadata
 <prefix>/<device_slug>/fhem/raw         → generated FHEM raw config snippet
 <prefix>/<device_slug>/cmd/<entity_slug>/<command>  ← HA subscribes here
@@ -78,3 +78,10 @@ uv run pytest
 ```
 
 Integration tests use `pytest-homeassistant-custom-component` and run against a real HA core instance.
+
+## Release safety
+
+This repo includes a GitHub Actions guard for tag pushes (`v*`):
+
+- It compares `custom_components/ha_mqtt_device_bridge/manifest.json` `version` with the pushed tag.
+- If they do not match (for example tag `v0.1.4` but manifest `0.1.3`), the workflow fails.

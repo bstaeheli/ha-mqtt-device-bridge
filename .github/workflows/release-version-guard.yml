@@ -1,0 +1,39 @@
+name: Release version guard
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  verify-manifest-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify manifest version matches tag
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import sys
+
+          tag = os.environ["GITHUB_REF_NAME"]
+          expected = tag[1:] if tag.startswith("v") else tag
+          manifest_path = pathlib.Path(
+              "custom_components/ha_mqtt_device_bridge/manifest.json"
+          )
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          actual = manifest.get("version")
+
+          if actual != expected:
+              print(
+                  f"::error file={manifest_path}::Manifest version '{actual}' "
+                  f"does not match tag '{tag}' (expected '{expected}')."
+              )
+              sys.exit(1)
+
+          print(f"OK: manifest version '{actual}' matches tag '{tag}'.")
+          PY

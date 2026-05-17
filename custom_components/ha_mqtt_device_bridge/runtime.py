@@ -34,6 +34,8 @@ class MqttBridgeRuntime:
         self._unsubscribers: list[Callable[[], None]] = []
         self._command_definitions: dict[str, CommandDefinition] = {}
         self._last_exports: list[dict[str, Any]] = []
+        # Map entity_id → export for efficient state-change updates
+        self._entity_to_export: dict[str, dict[str, Any]] = {}
 
     async def async_setup(self) -> None:
         """Start publishing and listening for MQTT commands."""
@@ -58,17 +60,16 @@ class MqttBridgeRuntime:
         )
         self._unsubscribers.append(unsubscribe_mqtt)
 
-        entity_ids = [
-            entity["entity_id"]
-            for export in self._last_exports
-            for entity in export["entities"]
-        ]
+        entity_ids = list(self._entity_to_export)
         if entity_ids:
 
             @callback
             def _state_changed(event: Event) -> None:
-                """Republish bridge readings after a Home Assistant state change."""
-                self.hass.async_create_task(self.async_republish())
+                """Publish only readings for the device whose entity changed."""
+                entity_id = event.data.get("entity_id")
+                self.hass.async_create_task(
+                    self.async_publish_readings(entity_id)
+                )
 
             self._unsubscribers.append(
                 async_track_state_change_event(
@@ -92,7 +93,7 @@ class MqttBridgeRuntime:
             "command_topic_count": len(self._command_definitions),
             "topic_prefix": self.options.topic_prefix,
             "qos": self.options.qos,
-            "retain": self.options.retain,
+            "retain": True,
             "allowed_integrations": self.options.allowed_integrations,
             "devices": [
                 {
@@ -112,7 +113,7 @@ class MqttBridgeRuntime:
         }
 
     async def async_republish(self) -> None:
-        """Publish retained bridge data for all currently allowed devices."""
+        """Publish all bridge data (static + readings) for all allowed devices."""
         from homeassistant.components import mqtt
 
         exports = collect_device_template_exports(
@@ -121,6 +122,11 @@ class MqttBridgeRuntime:
         )
         self._last_exports = exports
         self._command_definitions = {}
+        self._entity_to_export = {
+            entity["entity_id"]: export
+            for export in exports
+            for entity in export["entities"]
+        }
 
         for export in exports:
             fhem_config = build_fhem_device_config(
@@ -144,29 +150,61 @@ class MqttBridgeRuntime:
                 fhem_config.availability_topic,
                 "online",
                 self.options.qos,
-                self.options.retain,
+                True,
             )
             await mqtt.async_publish(
                 self.hass,
                 fhem_config.readings_topic,
                 json.dumps(readings_payload, sort_keys=True),
                 self.options.qos,
-                self.options.retain,
+                True,
             )
             await mqtt.async_publish(
                 self.hass,
                 fhem_config.meta_topic,
                 json.dumps(meta_payload, sort_keys=True),
                 self.options.qos,
-                self.options.retain,
+                True,
             )
             await mqtt.async_publish(
                 self.hass,
                 fhem_config.fhem_raw_topic,
                 fhem_config.render_raw(),
                 self.options.qos,
-                self.options.retain,
+                True,
             )
+
+    async def async_publish_readings(self, entity_id: str | None) -> None:
+        """Publish only the readings topic for the device owning entity_id."""
+        if entity_id is None:
+            return
+        export = self._entity_to_export.get(entity_id)
+        if export is None:
+            return
+        from homeassistant.components import mqtt
+
+        # Re-fetch current state for this export's entities
+        fresh_exports = collect_device_template_exports(
+            self.hass,
+            allowed_integrations=self.options.allowed_integrations,
+        )
+        device_id = export["device_id"]
+        fresh = next((e for e in fresh_exports if e["device_id"] == device_id), None)
+        if fresh is None:
+            return
+
+        fhem_config = build_fhem_device_config(
+            fresh,
+            topic_prefix=self.options.topic_prefix,
+        )
+        readings_payload = build_readings_payload(fresh)
+        await mqtt.async_publish(
+            self.hass,
+            fhem_config.readings_topic,
+            json.dumps(readings_payload, sort_keys=True),
+            self.options.qos,
+            True,
+        )
 
     async def async_handle_mqtt_message(self, topic: str, payload: Any) -> None:
         """Handle one MQTT command message."""
@@ -204,7 +242,7 @@ class MqttBridgeRuntime:
                     fhem_config.availability_topic,
                     payload,
                     self.options.qos,
-                    self.options.retain,
+                    True,
                 )
             except HomeAssistantError:
                 _LOGGER.debug(

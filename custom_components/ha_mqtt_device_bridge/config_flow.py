@@ -35,12 +35,10 @@ if TYPE_CHECKING:
 from .const import (
     CONF_ALLOWED_INTEGRATIONS,
     CONF_QOS,
-    CONF_RETAIN,
     CONF_TOPIC_PREFIX,
     DEFAULT_ALLOWED_INTEGRATIONS,
     DEFAULT_NAME,
     DEFAULT_QOS,
-    DEFAULT_RETAIN,
     DEFAULT_TOPIC_PREFIX,
     DOMAIN,
 )
@@ -72,7 +70,6 @@ class HaMqttDeviceBridgeConfigFlow(ConfigFlow, domain=DOMAIN):
                 options={
                     CONF_TOPIC_PREFIX: user_input[CONF_TOPIC_PREFIX],
                     CONF_QOS: user_input[CONF_QOS],
-                    CONF_RETAIN: user_input[CONF_RETAIN],
                     CONF_ALLOWED_INTEGRATIONS: list(DEFAULT_ALLOWED_INTEGRATIONS),
                 },
             )
@@ -84,7 +81,6 @@ class HaMqttDeviceBridgeConfigFlow(ConfigFlow, domain=DOMAIN):
                     _vol().Required(CONF_NAME, default=DEFAULT_NAME): str,
                     _vol().Required(CONF_TOPIC_PREFIX, default=DEFAULT_TOPIC_PREFIX): str,
                     _vol().Required(CONF_QOS, default=DEFAULT_QOS): _vol().In([0, 1, 2]),
-                    _vol().Required(CONF_RETAIN, default=DEFAULT_RETAIN): bool,
                 }
             ),
         )
@@ -126,10 +122,6 @@ class HaMqttDeviceBridgeOptionsFlow(OptionsFlowWithReload):
                         CONF_QOS,
                         default=options.get(CONF_QOS, DEFAULT_QOS),
                     ): _vol().In([0, 1, 2]),
-                    _vol().Required(
-                        CONF_RETAIN,
-                        default=options.get(CONF_RETAIN, DEFAULT_RETAIN),
-                    ): bool,
                     _vol().Required(
                         CONF_ALLOWED_INTEGRATIONS,
                         default=",".join(

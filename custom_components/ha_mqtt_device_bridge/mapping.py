@@ -25,10 +25,14 @@ def object_id(entity_id: str) -> str:
 def build_readings_payload(template_export: Mapping[str, Any]) -> dict[str, Any]:
     """Build a compact FHEM readings payload from a template export."""
     payload: dict[str, Any] = {}
+    timestamps: list[str] = []
 
     for entity in template_export["entities"]:
         reading = ascii_slug(object_id(entity["entity_id"]), fallback="entity")
         payload[reading] = entity.get("state")
+
+        if ts := entity.get("last_changed"):
+            timestamps.append(ts)
 
         attributes = entity.get("attributes", {})
         if entity["domain"] == "cover":
@@ -38,6 +42,9 @@ def build_readings_payload(template_export: Mapping[str, Any]) -> dict[str, Any]
                 payload[f"{reading}_tilt_position"] = attributes[
                     "current_tilt_position"
                 ]
+
+    if timestamps:
+        payload["_ts"] = max(timestamps)
 
     return payload
 

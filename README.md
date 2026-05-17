@@ -1,44 +1,79 @@
 # Home Assistant MQTT Device Bridge
 
-Planning repository for a Home Assistant custom integration that publishes selected Home Assistant devices to MQTT for consumption by FHEM `MQTT2_DEVICE`.
+A Home Assistant custom integration that publishes selected Home Assistant devices to MQTT for consumption by FHEM `MQTT2_DEVICE`.
 
 The initial target is a bridge from Home Assistant's Overkiz and Miele integrations to FHEM. Both integrations expose one physical device as many Home Assistant entities across several domains, so the bridge is device-centric: one Home Assistant device becomes one FHEM `MQTT2_DEVICE`.
 
-## Goals
+## Features
 
-- Publish whitelisted Home Assistant devices and their entities to MQTT.
-- Make the MQTT contract easy to consume from FHEM `MQTT2_DEVICE`.
-- Allow FHEM to execute supported Home Assistant actions through simple command topics.
-- Use modern Home Assistant integration patterns: UI config flow, options flow, typed runtime data, clean unload, diagnostics, tests, and Home Assistant's built-in MQTT APIs.
-- Avoid YAML-only configuration in Home Assistant.
+- Publishes whitelisted Home Assistant devices and their entities to MQTT.
+- Device-centric: one HA device → one FHEM `MQTT2_DEVICE`.
+- Generates FHEM raw config snippets (readingList, setList, webCmd, setStateList) automatically.
+- Subscribes to MQTT command topics and translates them to HA service calls.
+- UI-based setup via config flow and options flow (no YAML required).
+- All state/metadata topics are retained; only changed readings are re-published on state changes.
+- Readings payload includes a `_ts` timestamp (ISO 8601) of the most recent entity state change.
+- `republish` service action for manual re-broadcast of all retained topics.
+- Diagnostics support with sensitive value redaction.
 
-## Non-Goals For The First Version
+## Installation
 
-- Generic Home Assistant MQTT Discovery.
-- Arbitrary MQTT payloads that can call any Home Assistant service.
-- Automatic execution of FHEM configuration commands from MQTT.
-- Support for every Home Assistant integration on day one.
+Install via [HACS](https://hacs.xyz) as a custom repository:
 
-## Initial Scope
+1. HACS → ⋮ → Custom repositories → `https://github.com/bstaeheli/ha-mqtt-device-bridge` → Integration
+2. Download and restart Home Assistant.
+3. Settings → Devices & Services → Add Integration → **Home Assistant MQTT Device Bridge**
 
-- Home Assistant Core: current modern APIs, starting with the 2026.x generation.
-- Broker topology: Home Assistant and FHEM use the same MQTT broker independently.
-- Source integrations: `overkiz` and `miele`.
-- FHEM integration:
-  - Generated FHEM raw config snippets.
-  - A planned FHEM `attrTemplate` for repeatable setup.
-  - Deterministic automatic FHEM device names on first implementation.
+## Configuration
 
-## Architecture
+### Initial setup
 
-See [docs/fhem-mqtt2-architecture.md](docs/fhem-mqtt2-architecture.md) for the detailed design, MQTT topic contract, FHEM mapping, MVP checklist, and references.
+| Field | Default | Description |
+|---|---|---|
+| Name | Home Assistant MQTT Device Bridge | Integration entry name |
+| MQTT topic prefix | `ha2fhem` | Root prefix for all published topics |
+| MQTT QoS | `0` | QoS level for all publishes |
 
-## Tests
+### Options (after setup)
 
-Python tooling is managed with `uv`. The repository starts with standard-library tests for the redacted example fixtures:
+| Field | Default | Description |
+|---|---|---|
+| MQTT topic prefix | `ha2fhem` | Root prefix for all published topics |
+| MQTT QoS | `0` | QoS level for all publishes |
+| Allowed integration domains | `overkiz,miele` | Comma-separated HA integration domains to bridge |
 
-```sh
-UV_CACHE_DIR=.uv-cache uv run python -m unittest discover -s tests
+All MQTT messages are published with `retain=True`.
+
+## MQTT Topic Contract
+
+```text
+<prefix>/<device_slug>/availability     → "online" / "offline"
+<prefix>/<device_slug>/readings         → JSON state snapshot with _ts
+<prefix>/<device_slug>/meta             → JSON device + entity metadata
+<prefix>/<device_slug>/fhem/raw         → generated FHEM raw config snippet
+<prefix>/<device_slug>/cmd/<entity_slug>/<command>  ← HA subscribes here
 ```
 
-Home Assistant integration tests will be added with the implementation scaffold.
+See [docs/fhem-mqtt2-architecture.md](docs/fhem-mqtt2-architecture.md) for the full design.
+
+## FHEM Setup
+
+1. Ensure FHEM has a `MQTT2_CLIENT` connected to the same broker.
+2. Copy `fhem/ha_mqtt_device_bridge.attrTemplate` to your FHEM config directory and import it:
+   ```
+   attrTemplate import /path/to/ha_mqtt_device_bridge.attrTemplate
+   ```
+3. For each bridged device, take the generated raw config from the `fhem/raw` topic and paste it into FHEM, then apply the template:
+   ```
+   attr <DeviceName> attrTemplate ha_mqtt_device_bridge
+   ```
+
+## Development
+
+Python tooling is managed with `uv`.
+
+```sh
+uv run pytest
+```
+
+Integration tests use `pytest-homeassistant-custom-component` and run against a real HA core instance.

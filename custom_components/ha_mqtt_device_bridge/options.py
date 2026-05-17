@@ -9,11 +9,9 @@ from typing import Any
 from .const import (
     CONF_ALLOWED_INTEGRATIONS,
     CONF_QOS,
-    CONF_RETAIN,
     CONF_TOPIC_PREFIX,
     DEFAULT_ALLOWED_INTEGRATIONS,
     DEFAULT_QOS,
-    DEFAULT_RETAIN,
     DEFAULT_TOPIC_PREFIX,
 )
 
@@ -24,7 +22,6 @@ class BridgeOptions:
 
     topic_prefix: str
     qos: int
-    retain: bool
     allowed_integrations: tuple[str, ...]
 
     @classmethod
@@ -36,7 +33,6 @@ class BridgeOptions:
             )
             or DEFAULT_TOPIC_PREFIX,
             qos=int(options.get(CONF_QOS, DEFAULT_QOS)),
-            retain=bool(options.get(CONF_RETAIN, DEFAULT_RETAIN)),
             allowed_integrations=parse_domain_csv(
                 options.get(CONF_ALLOWED_INTEGRATIONS, DEFAULT_ALLOWED_INTEGRATIONS)
             ),

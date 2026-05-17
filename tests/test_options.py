@@ -7,7 +7,6 @@ import unittest
 from custom_components.ha_mqtt_device_bridge.const import (
     CONF_ALLOWED_INTEGRATIONS,
     CONF_QOS,
-    CONF_RETAIN,
     CONF_TOPIC_PREFIX,
 )
 from custom_components.ha_mqtt_device_bridge.options import (
@@ -32,14 +31,12 @@ class OptionsTest(unittest.TestCase):
             {
                 CONF_TOPIC_PREFIX: "/ha2fhem/",
                 CONF_QOS: "1",
-                CONF_RETAIN: True,
                 CONF_ALLOWED_INTEGRATIONS: "miele,overkiz",
             }
         )
 
         self.assertEqual(options.topic_prefix, "ha2fhem")
         self.assertEqual(options.qos, 1)
-        self.assertTrue(options.retain)
         self.assertEqual(options.allowed_integrations, ("miele", "overkiz"))
 
 

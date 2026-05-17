@@ -37,7 +37,6 @@ async def test_diagnostics_returns_expected_keys(
             "command_topic_count": 5,
             "topic_prefix": "ha2fhem",
             "qos": 0,
-            "retain": True,
             "allowed_integrations": ("overkiz", "miele"),
             "devices": [],
         }
@@ -83,7 +82,6 @@ async def test_diagnostics_redacts_sensitive_fields(
             "command_topic_count": 1,
             "topic_prefix": "ha2fhem",
             "qos": 0,
-            "retain": True,
             "allowed_integrations": ("overkiz",),
             "devices": [
                 {

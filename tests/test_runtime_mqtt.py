@@ -11,7 +11,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.ha_mqtt_device_bridge.const import (
     CONF_ALLOWED_INTEGRATIONS,
     CONF_QOS,
-    CONF_RETAIN,
     CONF_TOPIC_PREFIX,
     DOMAIN,
 )

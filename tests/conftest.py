@@ -10,7 +10,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.ha_mqtt_device_bridge.const import (
     CONF_ALLOWED_INTEGRATIONS,
     CONF_QOS,
-    CONF_RETAIN,
     CONF_TOPIC_PREFIX,
     DOMAIN,
 )
@@ -22,7 +21,6 @@ def bridge_options() -> dict[str, Any]:
     return {
         CONF_TOPIC_PREFIX: "ha2fhem",
         CONF_QOS: 0,
-        CONF_RETAIN: True,
         CONF_ALLOWED_INTEGRATIONS: ["overkiz", "miele"],
     }
 

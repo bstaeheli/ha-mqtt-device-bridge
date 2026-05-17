@@ -38,10 +38,11 @@ The integration should follow current Home Assistant developer guidance:
 
 - `manifest.json` declares `dependencies: ["mqtt"]`, `config_flow: true`, `integration_type: "hub"`, and an appropriate `iot_class`.
 - `config_flow.py` creates the config entry through the UI.
-- `options_flow.py` manages whitelist, topic prefix, retain, QoS, and export settings.
+- `options_flow.py` manages allowed integration domains, topic prefix, and QoS.
 - Runtime objects are stored in `ConfigEntry.runtime_data`.
 - `async_setup_entry` waits for MQTT availability before subscribing.
-- All MQTT publishes pass explicit `qos` and `retain` values.
+- All MQTT publishes use `retain=True` and an explicit `qos` value.
+- State-change listeners publish only the `readings` topic for the affected device; `meta` and `fhem/raw` are only re-published on setup or explicit `republish` service call.
 - Subscriptions and event listeners are removed in `async_unload_entry`.
 - Integration service actions, for example `republish`, are registered in `async_setup`.
 - Diagnostics redact sensitive values.
@@ -67,10 +68,10 @@ ha2fhem/<device_slug>/cmd/<entity_slug>/<command>
 
 Recommended behavior:
 
-- `availability`: retained, payload `online` or `offline`.
-- `readings`: retained JSON object for FHEM `json2nameValue($EVENT)`.
-- `meta`: retained JSON object describing HA device, entities, available commands, and template decisions.
-- `fhem/raw`: retained text containing generated FHEM raw config for manual import.
+- `availability`: always retained, payload `online` or `offline`.
+- `readings`: always retained JSON object for FHEM `json2nameValue($EVENT)`; includes `_ts` (ISO 8601 timestamp of the most recently changed entity). Re-published on every state change of a bridged entity.
+- `meta`: always retained JSON object describing HA device, entities, available commands, and template decisions. Re-published only on setup or explicit `republish` service call.
+- `fhem/raw`: always retained text containing generated FHEM raw config for manual import. Re-published only on setup or explicit `republish` service call.
 - `cmd/...`: non-retained command topics subscribed by Home Assistant.
 
 Example readings payload:
@@ -82,7 +83,8 @@ Example readings payload:
   "program": "cottons",
   "remaining_time": 42,
   "door": "closed",
-  "mobile_start": "on"
+  "mobile_start": "on",
+  "_ts": "2026-05-17T19:43:00+02:00"
 }
 ```
 

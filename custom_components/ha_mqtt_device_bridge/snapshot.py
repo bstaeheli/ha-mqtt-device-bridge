@@ -45,6 +45,9 @@ def collect_device_template_exports(
             if config_entry_id
             else None
         )
+        last_changed = (
+            state.last_changed.isoformat() if state is not None else None
+        )
 
         grouped[device_id].append(
             {
@@ -52,6 +55,7 @@ def collect_device_template_exports(
                 "domain": entity_id.split(".", 1)[0],
                 "friendly_name": friendly_name,
                 "state": state.state if state is not None else "unavailable",
+                "last_changed": last_changed,
                 "attributes": attributes,
                 "config_entry_id": config_entry_id,
                 "config_entry_domain": integration_domain,

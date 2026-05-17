@@ -10,7 +10,6 @@ from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.ha_mqtt_device_bridge.const import (
     CONF_QOS,
-    CONF_RETAIN,
     CONF_TOPIC_PREFIX,
     DOMAIN,
 )
@@ -39,7 +38,6 @@ async def test_config_flow_creates_entry(hass: HomeAssistant) -> None:
                 "name": "Test Bridge",
                 CONF_TOPIC_PREFIX: "ha2fhem",
                 CONF_QOS: 0,
-                CONF_RETAIN: True,
             },
         )
 
@@ -47,7 +45,6 @@ async def test_config_flow_creates_entry(hass: HomeAssistant) -> None:
     assert result["title"] == "Test Bridge"
     assert result["options"][CONF_TOPIC_PREFIX] == "ha2fhem"
     assert result["options"][CONF_QOS] == 0
-    assert result["options"][CONF_RETAIN] is True
 
 
 async def test_config_flow_aborts_if_already_configured(
@@ -68,7 +65,6 @@ async def test_config_flow_aborts_if_already_configured(
             "name": "Bridge 2",
             CONF_TOPIC_PREFIX: "ha2fhem",
             CONF_QOS: 0,
-            CONF_RETAIN: True,
         },
     )
     assert result["type"] == FlowResultType.ABORT

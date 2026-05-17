@@ -5,8 +5,7 @@
         "data": {
           "name": "Name",
           "topic_prefix": "MQTT topic prefix",
-          "qos": "MQTT QoS",
-          "retain": "Retain MQTT state and metadata"
+          "qos": "MQTT QoS"
         }
       }
     }
@@ -17,7 +16,6 @@
         "data": {
           "topic_prefix": "MQTT topic prefix",
           "qos": "MQTT QoS",
-          "retain": "Retain MQTT state and metadata",
           "allowed_integrations": "Allowed integration domains"
         }
       }

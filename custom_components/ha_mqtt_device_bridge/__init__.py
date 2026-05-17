@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .const import DOMAIN, SERVICE_REPUBLISH
+from .runtime import MqttBridgeRuntime
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -21,11 +22,15 @@ type HaMqttDeviceBridgeConfigEntry = ConfigEntry[BridgeRuntimeData]
 class BridgeRuntimeData:
     """Runtime data for a loaded bridge config entry."""
 
-    config_entry_id: str
+    manager: MqttBridgeRuntime
 
     async def async_republish(self) -> None:
         """Republish bridge metadata and states."""
-        # The MQTT manager will be wired in once the mapping layer is implemented.
+        await self.manager.async_republish()
+
+    async def async_unload(self) -> None:
+        """Unload runtime resources."""
+        await self.manager.async_unload()
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -69,7 +74,9 @@ async def async_setup_entry(
     from homeassistant.components import mqtt
 
     await mqtt.async_wait_for_mqtt_client(hass)
-    entry.runtime_data = BridgeRuntimeData(config_entry_id=entry.entry_id)
+    manager = MqttBridgeRuntime(hass, entry)
+    entry.runtime_data = BridgeRuntimeData(manager=manager)
+    await manager.async_setup()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
@@ -78,4 +85,7 @@ async def async_unload_entry(
     hass: HomeAssistant, entry: HaMqttDeviceBridgeConfigEntry
 ) -> bool:
     """Unload a bridge config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok and hasattr(entry, "runtime_data"):
+        await entry.runtime_data.async_unload()
+    return unload_ok

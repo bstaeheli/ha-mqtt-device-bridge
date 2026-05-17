@@ -1,0 +1,206 @@
+{
+  "home_assistant": {
+    "version": "2026.5.2",
+    "installation_type": "Home Assistant OS"
+  },
+  "custom_components": {},
+  "integration_manifest": {
+    "domain": "miele",
+    "name": "Miele",
+    "codeowners": [
+      "astrandb"
+    ],
+    "config_flow": true,
+    "dependencies": [
+      "application_credentials"
+    ],
+    "documentation": "https://www.home-assistant.io/integrations/miele",
+    "integration_type": "hub",
+    "iot_class": "cloud_push",
+    "loggers": [
+      "pymiele"
+    ],
+    "quality_scale": "platinum",
+    "requirements": [
+      "pymiele==0.6.2"
+    ],
+    "single_config_entry": true,
+    "zeroconf": [
+      "_mieleathome._tcp.local."
+    ],
+    "is_built_in": true,
+    "overwrites_built_in": false
+  },
+  "setup_times": {},
+  "data": {
+    "info": {
+      "manufacturer": "Miele",
+      "model": "Dishwasher",
+      "model_id": "G7695"
+    },
+    "data": {
+      "auth_implementation": "REDACTED",
+      "token": {
+        "redacted": true
+      }
+    },
+    "miele_data": {
+      "devices": {
+        "REDACTED_MIELE_DEVICE_ID": {
+          "ident": {
+            "type": {
+              "key_localized": "Device type",
+              "value_raw": 7,
+              "value_localized": "Dishwasher"
+            },
+            "deviceName": "REDACTED",
+            "protocolVersion": 4,
+            "deviceIdentLabel": {
+              "fabNumber": "REDACTED",
+              "fabIndex": "REDACTED",
+              "techType": "G7695",
+              "matNumber": "REDACTED",
+              "swids": [
+                "REDACTED"
+              ]
+            },
+            "xkmIdentLabel": {
+              "techType": "EK057",
+              "releaseVersion": "08.32"
+            }
+          },
+          "state": {
+            "ProgramID": {
+              "value_raw": 0,
+              "value_localized": "",
+              "key_localized": "Program name"
+            },
+            "status": {
+              "value_raw": 1,
+              "value_localized": "Off",
+              "key_localized": "status"
+            },
+            "programType": {
+              "value_raw": 0,
+              "value_localized": "",
+              "key_localized": "Program type"
+            },
+            "programPhase": {
+              "value_raw": 0,
+              "value_localized": "",
+              "key_localized": "Program phase"
+            },
+            "remainingTime": [
+              0,
+              0
+            ],
+            "startTime": [],
+            "targetTemperature": [
+              {
+                "value_raw": -32768,
+                "value_localized": null,
+                "unit": "Celsius"
+              },
+              {
+                "value_raw": -32768,
+                "value_localized": null,
+                "unit": "Celsius"
+              },
+              {
+                "value_raw": -32768,
+                "value_localized": null,
+                "unit": "Celsius"
+              }
+            ],
+            "coreTargetTemperature": [
+              {
+                "value_raw": -32768,
+                "value_localized": null,
+                "unit": "Celsius"
+              }
+            ],
+            "temperature": [],
+            "coreTemperature": [
+              {
+                "value_raw": -32768,
+                "value_localized": null,
+                "unit": "Celsius"
+              }
+            ],
+            "signalInfo": false,
+            "signalFailure": false,
+            "signalDoor": true,
+            "remoteEnable": {
+              "fullRemoteControl": false,
+              "smartGrid": false,
+              "mobileStart": false
+            },
+            "ambientLight": null,
+            "light": 2,
+            "elapsedTime": [
+              0,
+              0
+            ],
+            "spinningSpeed": {
+              "unit": "rpm",
+              "value_raw": null,
+              "value_localized": null,
+              "key_localized": "Spin speed"
+            },
+            "dryingStep": {
+              "value_raw": null,
+              "value_localized": "",
+              "key_localized": "Drying level"
+            },
+            "ventilationStep": {
+              "value_raw": null,
+              "value_localized": "",
+              "key_localized": "Fan level"
+            },
+            "plateStep": [],
+            "ecoFeedback": null,
+            "batteryLevel": null
+          }
+        }
+      },
+      "filling_levels": {
+        "REDACTED_MIELE_DEVICE_ID": {
+          "twinDosContainer1FillingLevel": null,
+          "twinDosContainer2FillingLevel": null,
+          "powerDiscFillingLevel": 46.0,
+          "saltFillingLevel": 61,
+          "rinseAidFillingLevel": 27,
+          "coalFilterSaturation": null,
+          "fatFilterSaturation": null,
+          "descalingCounter": null,
+          "degreasingCounter": null,
+          "milkCleaningCounter": null
+        }
+      },
+      "actions": {
+        "REDACTED_MIELE_DEVICE_ID": {
+          "processAction": [],
+          "light": [
+            1
+          ],
+          "ambientLight": [],
+          "startTime": [],
+          "ventilationStep": [],
+          "programId": [],
+          "targetTemperature": [],
+          "deviceName": "REDACTED",
+          "powerOn": true,
+          "powerOff": false,
+          "colors": [],
+          "modes": [],
+          "runOnTime": []
+        }
+      },
+      "programs": "Not implemented",
+      "missing_code_warnings": [
+        "None"
+      ]
+    }
+  },
+  "issues": []
+}

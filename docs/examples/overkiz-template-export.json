@@ -1,0 +1,77 @@
+{
+  "export_version": 1,
+  "root_entity": "cover.overkiz_fixture_2",
+  "device_id": "REDACTED_OVERKIZ_DEVICE_ID",
+  "device": {
+    "name": "Overkiz Fixture Device",
+    "name_by_user": null,
+    "manufacturer": "Somfy",
+    "model": "ExteriorVenetianBlind",
+    "model_id": "PositionableExteriorVenetianBlind",
+    "sw_version": "5164839A03",
+    "hw_version": "io:ExteriorVenetianBlindIOComponent"
+  },
+  "entities": [
+    {
+      "entity_id": "button.overkiz_fixture_0",
+      "domain": "button",
+      "friendly_name": "Overkiz button fixture 0",
+      "state": "unknown",
+      "attributes": {
+        "device_class": "identify",
+        "icon": "mdi:human-greeting-variant",
+        "friendly_name": "Overkiz button fixture 0"
+      },
+      "config_entry_id": "REDACTED_OVERKIZ_CONFIG_ENTRY_ID",
+      "config_entry_domain": "overkiz",
+      "config_entry_title": "Overkiz Fixture"
+    },
+    {
+      "entity_id": "button.overkiz_fixture_1",
+      "domain": "button",
+      "friendly_name": "Overkiz button fixture 1",
+      "state": "unknown",
+      "attributes": {
+        "icon": "mdi:star",
+        "friendly_name": "Overkiz button fixture 1"
+      },
+      "config_entry_id": "REDACTED_OVERKIZ_CONFIG_ENTRY_ID",
+      "config_entry_domain": "overkiz",
+      "config_entry_title": "Overkiz Fixture"
+    },
+    {
+      "entity_id": "cover.overkiz_fixture_2",
+      "domain": "cover",
+      "friendly_name": "Overkiz cover fixture 2",
+      "state": "closed",
+      "attributes": {
+        "is_closed": true,
+        "current_position": 0,
+        "current_tilt_position": 0,
+        "device_class": "blind",
+        "friendly_name": "Overkiz cover fixture 2",
+        "supported_features": 255
+      },
+      "config_entry_id": "REDACTED_OVERKIZ_CONFIG_ENTRY_ID",
+      "config_entry_domain": "overkiz",
+      "config_entry_title": "Overkiz Fixture"
+    },
+    {
+      "entity_id": "number.overkiz_fixture_3",
+      "domain": "number",
+      "friendly_name": "Overkiz number fixture 3",
+      "state": "97",
+      "attributes": {
+        "min": 0,
+        "max": 100,
+        "step": 1.0,
+        "mode": "auto",
+        "icon": "mdi:content-save-cog",
+        "friendly_name": "Overkiz number fixture 3"
+      },
+      "config_entry_id": "REDACTED_OVERKIZ_CONFIG_ENTRY_ID",
+      "config_entry_domain": "overkiz",
+      "config_entry_title": "Overkiz Fixture"
+    }
+  ]
+}

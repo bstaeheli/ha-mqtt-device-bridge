@@ -1,0 +1,319 @@
+{
+  "export_version": 1,
+  "root_entity": "binary_sensor.miele_fixture_0",
+  "device_id": "REDACTED_MIELE_DEVICE_ID",
+  "device": {
+    "name": "Miele Fixture Appliance",
+    "name_by_user": null,
+    "manufacturer": "Miele",
+    "model": "Tumble dryer",
+    "model_id": "PDR500-08HP P",
+    "sw_version": "57.07",
+    "hw_version": "EK047DP"
+  },
+  "entities": [
+    {
+      "entity_id": "binary_sensor.miele_fixture_0",
+      "domain": "binary_sensor",
+      "friendly_name": "Miele binary_sensor fixture 0",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "problem",
+        "friendly_name": "Miele binary_sensor fixture 0"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "binary_sensor.miele_fixture_1",
+      "domain": "binary_sensor",
+      "friendly_name": "Miele binary_sensor fixture 1",
+      "state": "unavailable",
+      "attributes": {
+        "friendly_name": "Miele binary_sensor fixture 1"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "binary_sensor.miele_fixture_2",
+      "domain": "binary_sensor",
+      "friendly_name": "Miele binary_sensor fixture 2",
+      "state": "unavailable",
+      "attributes": {
+        "friendly_name": "Miele binary_sensor fixture 2"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "binary_sensor.miele_fixture_3",
+      "domain": "binary_sensor",
+      "friendly_name": "Miele binary_sensor fixture 3",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "problem",
+        "friendly_name": "Miele binary_sensor fixture 3"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "binary_sensor.miele_fixture_4",
+      "domain": "binary_sensor",
+      "friendly_name": "Miele binary_sensor fixture 4",
+      "state": "unavailable",
+      "attributes": {
+        "friendly_name": "Miele binary_sensor fixture 4"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "binary_sensor.miele_fixture_5",
+      "domain": "binary_sensor",
+      "friendly_name": "Miele binary_sensor fixture 5",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "door",
+        "friendly_name": "Miele binary_sensor fixture 5"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_6",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 6",
+      "state": "off",
+      "attributes": {
+        "options": [
+          "autocleaning",
+          "failure",
+          "idle",
+          "in_use",
+          "not_connected",
+          "off",
+          "on",
+          "pause",
+          "program_ended",
+          "program_interrupted",
+          "programmed",
+          "reserved",
+          "rinse_hold",
+          "service",
+          "supercooling",
+          "supercooling_superfreezing",
+          "superfreezing",
+          "superheating",
+          "waiting_to_start"
+        ],
+        "device_class": "enum",
+        "icon": "mdi:tumble-dryer",
+        "friendly_name": "Miele sensor fixture 6"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_7",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 7",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Miele sensor fixture 7"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_8",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 8",
+      "state": "unavailable",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "friendly_name": "Miele sensor fixture 8"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_9",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 9",
+      "state": "unavailable",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Miele sensor fixture 9"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_10",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 10",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "enum",
+        "friendly_name": "Miele sensor fixture 10"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_11",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 11",
+      "state": "unavailable",
+      "attributes": {
+        "options": [
+          "anti_crease",
+          "automatic_start",
+          "comfort_cooling",
+          "cooling_down",
+          "drying",
+          "extra_dry",
+          "finished",
+          "hand_iron",
+          "hand_iron_1",
+          "hand_iron_2",
+          "hygiene_drying",
+          "machine_iron",
+          "moisten",
+          "normal",
+          "normal_plus",
+          "not_running",
+          "perfect_dry_active",
+          "program_running",
+          "rinse_out_lint",
+          "rinses",
+          "safety_cooling",
+          "slightly_dry",
+          "smoothing",
+          "steam_smoothing",
+          "thermo_spin",
+          "timed_drying",
+          "warm_air"
+        ],
+        "device_class": "enum",
+        "friendly_name": "Miele sensor fixture 11"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_12",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 12",
+      "state": "unavailable",
+      "attributes": {
+        "options": [
+          "automatic_program",
+          "maintenance_program",
+          "normal_operation_mode",
+          "own_program"
+        ],
+        "device_class": "enum",
+        "friendly_name": "Miele sensor fixture 12"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_13",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 13",
+      "state": "unavailable",
+      "attributes": {
+        "unit_of_measurement": "h",
+        "device_class": "duration",
+        "friendly_name": "Miele sensor fixture 13"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_14",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 14",
+      "state": "unavailable",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Miele sensor fixture 14"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_15",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 15",
+      "state": "unavailable",
+      "attributes": {
+        "options": [
+          "extra_dry",
+          "hand_iron_1",
+          "hand_iron_2",
+          "machine_iron",
+          "normal",
+          "normal_plus",
+          "slightly_dry",
+          "smoothing"
+        ],
+        "device_class": "enum",
+        "friendly_name": "Miele sensor fixture 15"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "sensor.miele_fixture_16",
+      "domain": "sensor",
+      "friendly_name": "Miele sensor fixture 16",
+      "state": "unavailable",
+      "attributes": {
+        "unit_of_measurement": "min",
+        "device_class": "duration",
+        "friendly_name": "Miele sensor fixture 16"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    },
+    {
+      "entity_id": "switch.miele_fixture_17",
+      "domain": "switch",
+      "friendly_name": "Miele switch fixture 17",
+      "state": "unavailable",
+      "attributes": {
+        "friendly_name": "Miele switch fixture 17"
+      },
+      "config_entry_id": "REDACTED_MIELE_CONFIG_ENTRY_ID",
+      "config_entry_domain": "miele",
+      "config_entry_title": "Miele Fixture"
+    }
+  ]
+}
